@@ -38,7 +38,7 @@ Once installed, the extension works entirely in the background. When you visit a
 - If a site requires a mandatory server-side wait, you will see a full-screen **"Bypassing..."** timer. Do not close the tab; it will automatically redirect you once the wait is over.
 
 ## Developer
-Developed by [Gourav Saini](https://github.com/gouravsaini).
+Developed by [Gourav Saini](https://github.com/WebsiteLeLo).
 
 ## License
 MIT License
