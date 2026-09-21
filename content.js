@@ -70,13 +70,14 @@ function createWidget() {
 }
 
 function showFullScreenWait(id, seconds, titleText, subtitleText, freezePage, onComplete) {
+    const blockEvent = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+
     if (freezePage) {
         // Freeze page interactions to stop background ads
         window.stop();
         const highestId = window.setInterval(() => {}, 1000);
         for (let i = 0; i < highestId; i++) window.clearInterval(i);
         
-        const blockEvent = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
         ['click', 'mousedown', 'mouseup', 'keydown', 'keypress', 'keyup'].forEach(evt => {
             window.addEventListener(evt, blockEvent, true);
             document.addEventListener(evt, blockEvent, true);
@@ -397,7 +398,7 @@ function handleGoogleSearch() {
     return false;
 }
 
-function bypassWPSafeLink() {
+async function bypassWPSafeLink() {
     if (window.location.hostname.includes("tipsguru") || window.location.hostname.includes("vidyarays") || window.location.hostname.includes("mineverse")) {
         const STORAGE_KEY = "agy-tipsguru-wait";
         
@@ -440,7 +441,7 @@ function bypassWPSafeLink() {
         if (!window.agyTipsguruFetched) {
             window.agyTipsguruFetched = true;
             
-            new Promise(resolve => {
+            let destUrl = await new Promise(resolve => {
                 if (window.location.pathname.includes('prolink.php')) {
                     const id = new URLSearchParams(window.location.search).get("id");
                     if (id) {
@@ -460,27 +461,28 @@ function bypassWPSafeLink() {
                 chrome.runtime.sendMessage({type: "TIPSGURU_GET_DEST"}, (response) => {
                     resolve(response?.url || null);
                 });
-            }).then(destUrl => {
-                if (destUrl) {
-                    // Exact logic from example-extension: 252 seconds server wait
-                    const endAt = Date.now() + 252000;
-                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ dest: destUrl, endAt }));
-                    
-                    if (window.location.pathname !== '/') {
-                        window.location.replace(window.location.origin + '/');
-                    } else {
-                        window.location.reload();
-                    }
-                }
             });
+            
+            if (destUrl) {
+                // Exact logic from example-extension: 252 seconds server wait
+                const endAt = Date.now() + 252000;
+                sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ dest: destUrl, endAt }));
+                
+                if (window.location.pathname !== '/') {
+                    window.location.replace(window.location.origin + '/');
+                } else {
+                    window.location.reload();
+                }
+                return true;
+            }
         }
-        return true; // Block default bypass
+        return false; // Could not find destUrl, allow generic clicker to proceed to next step
     }
 
     return false;
 }
 
-function runGenericBypass() {
+async function runGenericBypass() {
     if (handleGoogleSearch()) return; // Stop if we're doing a Google Search auto-click
 
 
@@ -490,13 +492,13 @@ function runGenericBypass() {
     }
 
     // Attempt immediately
-    if (bypassWPSafeLink()) return;
+    if (await bypassWPSafeLink()) return;
     attemptSkip();
     
     // Check every second to progress the bypass workflow
     setInterval(async () => {
         if (!isAttemptingSkip) {
-            if (bypassWPSafeLink()) return; // Try deep bypass first
+            if (await bypassWPSafeLink()) return; // Try deep bypass first
             
             let skipped = await attemptSkip();
             if (skipped && !widgetAdded) {
