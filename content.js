@@ -353,6 +353,10 @@ async function attemptSkip() {
 }
 
 function isShortenerPage() {
+    const host = window.location.hostname;
+    const knownDomains = ["tipsguru.in", "arolinks.com", "entiredust.in", "hittracks.in", "vplink.in", "studyspark.study"];
+    if (knownDomains.some(d => host.includes(d))) return true;
+
     // Check if URL has query params usually used by shorteners
     if (window.location.search.includes('?id=') || window.location.pathname.length > 20) return true;
     
