@@ -1,31 +1,10 @@
 // background.js - Service Worker
 console.log("🛡️ Advanced Bypasser: Background Worker Started");
 
-let rules = {};
-
-// Load our rules map
-fetch(chrome.runtime.getURL('bypasser_rules.json'))
-    .then(r => r.json())
-    .then(data => { 
-        rules = data; 
-        console.log("Loaded bypass rules"); 
-    });
+// Load our rules map (Obsolete: logic moved to content.js)
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'CHECK_RULES') {
-        try {
-            const hostname = new URL(sender.url).hostname;
-            for (const [domain, rule] of Object.entries(rules)) {
-                if (hostname.includes(domain)) {
-                    sendResponse({ matched: true, rule: rule });
-                    return true;
-                }
-            }
-        } catch (e) {}
-        sendResponse({ matched: false });
-        return true;
-    }
 
     if (message.type === 'TIPSGURU_GET_DEST') {
         const url = sender.tab ? sender.tab.url : null;

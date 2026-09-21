@@ -507,17 +507,12 @@ function runGenericBypass() {
 // Start Bypasser
 async function init() {
     let host = window.location.hostname;
-    chrome.runtime.sendMessage({type: 'CHECK_RULES'}, function(response) {
-        if (response && response.matched) {
-            console.log("Ads Skipper Pro: Active on " + host + " (Matched rules)");
-            runGenericBypass();
-        } else if (isShortenerPage()) {
-            console.log("Ads Skipper Pro: Active on " + host + " (Heuristic match)");
-            runGenericBypass();
-        } else {
-            console.log("Ads Skipper Pro: Inactive on " + host);
-        }
-    });
+    if (isShortenerPage()) {
+        console.log("Ads Skipper Pro: Active on " + host + " (Heuristic match)");
+        runGenericBypass();
+    } else {
+        console.log("Ads Skipper Pro: Inactive on " + host);
+    }
 }
 
 // Ensure execution waits for document to be ready, but inject fast if already loaded
