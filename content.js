@@ -6,9 +6,7 @@ let widgetAdded = false;
 const strongShortenerSelectors = [
     "#invisibleCaptchaShortlink", "#go-link", "form[action*='/links/go']", 
     "#wpsafe-link", "#wpsafe-t1", "#wpsafe-t2", "#makingdifferenttimer",
-    "input[name='ad_form_data']", ".skip-btn",
-    "button[onclick*='startV96Scanner']", "#v96-result",
-    ".ai-rotate", ".code-block"
+    "input[name='ad_form_data']", "button[onclick*='startV96Scanner']", "#v96-result"
 ];
 
 const buttonSelectors = [
