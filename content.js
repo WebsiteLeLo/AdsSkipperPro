@@ -359,7 +359,7 @@ function isShortenerPage() {
     if (knownDomains.some(d => host.includes(d))) return true;
 
     // Check if URL has query params usually used by shorteners
-    if (window.location.search.includes('?id=') || window.location.pathname.length > 20) return true;
+    if (window.location.search.includes('?id=')) return true;
     
     // Check for obvious shortener DOM elements
     if (strongShortenerSelectors.some(sel => document.querySelector(sel))) return true;
